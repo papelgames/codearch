@@ -1,7 +1,8 @@
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, PhotoImage
 import csv
 import sys
+import os
 
 path = None
 
@@ -95,11 +96,11 @@ def ejecutar_funcion(path_):
     
 def abrir_archivo():
     global path
-    archivo = filedialog.askopenfilename(initialdir="/", title="Seleccionar Archivo", filetypes=[("Archivos CSV", "*.csv")])
+    archivo = filedialog.askopenfilename(initialdir="/", title="Seleccionar Archivo", filetypes=[("Archivos CSV", "*.csv *.CSV")])
     if archivo:
         label_archivo.config(text="Archivo seleccionado: " + archivo)
         path = archivo
-       
+
 # Crear la ventana principal
 root = tk.Tk()
 root.title("CoDeArch v 0.2")
@@ -108,8 +109,14 @@ root.resizable(False, False)
 root.geometry("600x600")  # Establece el tamaño inicial de la ventana en 800x600 píxeles
 
 # Asignar un ícono a la ventana
-root.iconbitmap(r'.\icono.ico')  
-# .
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+icono = PhotoImage(file=resource_path("icono.png"))
+root.iconphoto(True, icono)
+
 # Botón para abrir el archivo
 button_abrir = tk.Button(root, text="Abrir Archivo", command=abrir_archivo)
 button_abrir.pack(pady=10)
@@ -126,6 +133,12 @@ label_archivo.pack()
 text_area = tk.Text(root, height=50, width=200)
 text_area.pack(padx=10, pady=10)
 text_area.config(state='disabled')
+
+# ejecuto la función sin la necesidad de abrir los archivos a mano, paso el path como parametro
+if len(sys.argv)>1:
+    path = sys.argv[1]
+    ejecutar_funcion(path)
+    root.destroy()
 
 # Ejecutar la aplicación
 root.mainloop()
